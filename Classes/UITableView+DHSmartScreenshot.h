@@ -30,5 +30,11 @@
 						 footersAtSections:(NSSet *)footerSections
 						  rowsAtIndexPaths:(NSSet *)indexPaths;
 
+- (UIImage *)screenshotExcludingHeadersAtSections:(NSSet *)excludedHeaderSections
+                       excludingFootersAtSections:(NSSet *)excludedFooterSections
+                        excludingRowsAtIndexPaths:(NSSet *)excludedIndexPaths
+                         excludingTableHeaderView:(BOOL)withoutTableHeaderView
+                         excludingTableFooterView:(BOOL)withoutTableFooterView;
+
 @end
 

@@ -107,29 +107,12 @@
 					   excludingFootersAtSections:(NSSet *)excludedFooterSections
 						excludingRowsAtIndexPaths:(NSSet *)excludedIndexPaths
 {
-	NSMutableArray *screenshots = [NSMutableArray array];
-	// Header Screenshot
-	UIImage *headerScreenshot = [self screenshotOfHeaderView];
-	if (headerScreenshot) [screenshots addObject:headerScreenshot];
-	for (int section=0; section<self.numberOfSections; section++) {
-		// Header Screenshot
-		UIImage *headerScreenshot = [self screenshotOfHeaderViewAtSection:section excludedHeaderSections:excludedHeaderSections];
-		if (headerScreenshot) [screenshots addObject:headerScreenshot];
-		
-		// Screenshot of every cell of this section
-		for (int row=0; row<[self numberOfRowsInSection:section]; row++) {
-			NSIndexPath *cellIndexPath = [NSIndexPath indexPathForRow:row inSection:section];
-			UIImage *cellScreenshot = [self screenshotOfCellAtIndexPath:cellIndexPath excludedIndexPaths:excludedIndexPaths];
-			if (cellScreenshot) [screenshots addObject:cellScreenshot];
-		}
-		
-		// Footer Screenshot
-		UIImage *footerScreenshot = [self screenshotOfFooterViewAtSection:section excludedFooterSections:excludedFooterSections];
-		if (footerScreenshot) [screenshots addObject:footerScreenshot];
-	}
-	UIImage *footerScreenshot = [self screenshotOfFooterView];
-	if (footerScreenshot) [screenshots addObject:footerScreenshot];
-	return [UIImage verticalImageFromArray:screenshots];
+
+	return [self screenshotExcludingHeadersAtSections:excludedHeaderSections
+                           excludingFootersAtSections:excludedFooterSections
+                            excludingRowsAtIndexPaths:excludedIndexPaths
+                             excludingTableHeaderView:NO
+                             excludingTableFooterView:NO];
 }
 
 - (UIImage *)screenshotOfHeadersAtSections:(NSSet *)includedHeaderSections
@@ -155,6 +138,43 @@
 		if (footerScreenshot) [screenshots addObject:footerScreenshot];
 	}
 	return [UIImage verticalImageFromArray:screenshots];
+}
+
+- (UIImage *)screenshotExcludingHeadersAtSections:(NSSet *)excludedHeaderSections
+                       excludingFootersAtSections:(NSSet *)excludedFooterSections
+                        excludingRowsAtIndexPaths:(NSSet *)excludedIndexPaths
+                         excludingTableHeaderView:(BOOL)withoutTableHeaderView
+                         excludingTableFooterView:(BOOL)withoutTableFooterView
+{
+    NSMutableArray *screenshots = [NSMutableArray array];
+    // Header Screenshot
+    if (withoutTableHeaderView == NO) {
+        UIImage *headerScreenshot = [self screenshotOfHeaderView];
+        if (headerScreenshot) [screenshots addObject:headerScreenshot];
+    }
+    
+    for (int section=0; section<self.numberOfSections; section++) {
+        // Header Screenshot
+        UIImage *headerScreenshot = [self screenshotOfHeaderViewAtSection:section excludedHeaderSections:nil];
+        if (headerScreenshot) [screenshots addObject:headerScreenshot];
+        
+        // Screenshot of every cell of this section
+        for (int row=0; row<[self numberOfRowsInSection:section]; row++) {
+            NSIndexPath *cellIndexPath = [NSIndexPath indexPathForRow:row inSection:section];
+            UIImage *cellScreenshot = [self screenshotOfCellAtIndexPath:cellIndexPath excludedIndexPaths:nil];
+            if (cellScreenshot) [screenshots addObject:cellScreenshot];
+        }
+        
+        // Footer Screenshot
+        UIImage *footerScreenshot = [self screenshotOfFooterViewAtSection:section excludedFooterSections:nil];
+        if (footerScreenshot) [screenshots addObject:footerScreenshot];
+    }
+    
+    if (withoutTableFooterView == NO) {
+        UIImage *footerScreenshot = [self screenshotOfFooterView];
+        if (footerScreenshot) [screenshots addObject:footerScreenshot];
+    }
+    return [UIImage verticalImageFromArray:screenshots];
 }
 
 #pragma mark - Hard Working for Screenshots
